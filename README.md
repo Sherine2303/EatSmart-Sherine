@@ -7,8 +7,7 @@
 ### **1. Description du projet**
 
 (Complétez ici avec la description du projet présentée en classe.)
-
----
+<img src="./Assets/img/Capture.PNG">
 
 ### **3. Fonctionnalités principales**
 
