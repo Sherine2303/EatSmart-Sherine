@@ -38,3 +38,14 @@ Administration du menu, permettant d'ajouter, modifier ou supprimer des plats da
 
 <img src="./Assets/img/mcd.PNG">
 ---
+## Endpoints de l'API
+
+Adresse de l'API (en local) : http://localhost/____
+
+Voici les différents endpoints de l'API : 
+- `GET /articles` → Afficher la liste des articles
+- `GET /articles/{id}` → Afficher l'article avec l'id égal à {id}
+- `GET /categories` → Afficher la liste des catégories
+- `GET /categories/{id}` → Afficher la catégorie avec l'id égal à {id}
+- `GET /commandes` → Afficher la liste des commandes
+- `GET /commandes/{id}` → Afficher la commande avec l'id égal à {id}
