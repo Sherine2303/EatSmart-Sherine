@@ -40,7 +40,7 @@ Administration du menu, permettant d'ajouter, modifier ou supprimer des plats da
 ---
 ## Endpoints de l'API
 
-Adresse de l'API (en local) : http://localhost/____
+Adresse de l'API (en local) : http://localhost/sherine-api-eatsmart
 
 Voici les différents endpoints de l'API : 
 - `GET /articles` → Afficher la liste des articles
