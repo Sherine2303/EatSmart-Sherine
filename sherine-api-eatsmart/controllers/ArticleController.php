@@ -15,6 +15,11 @@ class ArticleController
         $articles = $this->model->getDBAllArticles();
         echo json_encode($articles);
     }
+    public function getArticlesByCategorieID($categorieId)
+    {
+        $articles = $this->model->getDBArticlesByCategorieID($categorieId);
+        echo json_encode($articles);
+    }
 }
 
 //$articleController = new ArticleController();

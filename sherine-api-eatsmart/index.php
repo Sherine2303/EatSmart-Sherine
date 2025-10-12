@@ -33,13 +33,15 @@ if (empty($_GET["page"])) {
                 echo $articleController->getAllArticles();
             }
             break;
-        case "categories" : 
-            // Si un second segment est présent (ex: un ID), on l’utilise
-            if (isset($url[1])) {
-                // Exemple : /catégorie/3 → affiche les infos du catégorie 3
-                echo "Afficher les informations de la catégorie : ". $url[1];
+        case "categories":
+            if (isset($url[1]) && isset($url[2]) && $url[2] === "articles") {
+                // Appel correct : /categories/3/articles
+                $articleController->getArticlesByCategorieID($url[1]);
+            } elseif (isset($url[1])) {
+                // Appel classique : /categories/3
+                $categorieController->getDBCategoriesByID($url[1]);
             } else {
-                // Sinon, on affiche tous les catégories
+                // Appel général : /categories
                 echo $categorieController->getAllCategories();
             }
             break;

@@ -18,6 +18,14 @@
             $stmt = $this->pdo->query("SELECT * FROM article");
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+        public function getDBArticlesByCategorieID($categorieId)
+        {
+            $req = "SELECT * FROM article WHERE id_categorie = :categorieId";
+            $stmt = $this->pdo->prepare($req);
+            $stmt->bindValue(":categorieId", $categorieId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
     }
     //$articleModel = new ArticleModel(); 
     //print_r($articleModel->getDBAllArticles());
