@@ -44,13 +44,12 @@ if (empty($_GET["page"])) {
                 echo $categorieController->getAllCategories();
             }
             break;
-        case "commandes" : 
-            // Si un second segment est présent (ex: un ID), on l’utilise
-            if (isset($url[1])) {
-                // Exemple : /commande/3 → affiche les infos de la commande 3
-                echo "Afficher les informations de la commande : ". $url[1];
+        case "commandes":
+            if (isset($url[1]) && isset($url[2]) && $url[2] === "articles") {
+                $commandeController->getArticlesByCommandeID($url[1]);
+            } elseif (isset($url[1])) {
+                $commandeController->getDBCommandesByID($url[1]);
             } else {
-                // Sinon, on affiche tous les commandes
                 echo $commandeController->getAllCommandes();
             }
             break;

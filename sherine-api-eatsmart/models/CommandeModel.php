@@ -28,6 +28,18 @@
             $stmt->execute([':id' => $id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+        public function getArticlesByCommandeID($id)
+        {
+            $sql = "SELECT article.id_article, article.nom, article.prix, article.description, article.id_categorie,
+                        assoc_article_commande.quantite_article
+                    FROM article
+                    INNER JOIN assoc_article_commande ON article.id_article = assoc_article_commande.id_article
+                    WHERE assoc_article_commande.id_commande = :id";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([':id' => $id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
     }
     //$commandeModel = new CommandeModel(); 
     //print_r($commandeModel->getDBAllCommandes());
