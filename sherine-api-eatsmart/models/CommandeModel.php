@@ -18,6 +18,16 @@
             $stmt = $this->pdo->query("SELECT * FROM commande");
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+        public function getCommandesByArticleID($id)
+        {
+            $sql = "SELECT commande.* FROM commande
+                    INNER JOIN assoc_article_commande ON commande.id_commande = assoc_article_commande.id_commande
+                    WHERE assoc_article_commande.id_article = :id";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([':id' => $id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
     }
     //$commandeModel = new CommandeModel(); 
     //print_r($commandeModel->getDBAllCommandes());

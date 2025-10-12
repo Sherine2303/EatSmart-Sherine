@@ -23,13 +23,12 @@ if (empty($_GET["page"])) {
 
     // On teste le premier segment pour déterminer la ressource demandée
     switch($url[0]) {
-        case "articles" : 
-            // Si un second segment est présent (ex: un ID), on l’utilise
-            if (isset($url[1])) {
-                // Exemple : /Article/3 → affiche les infos du Article 3
-                echo "Afficher les informations de l'article: ". $url[1];
+        case "articles":
+            if (isset($url[1]) && isset($url[2]) && $url[2] === "commandes") {
+                $commandeController->getCommandesByArticleID($url[1]);
+            } elseif (isset($url[1])) {
+                $articleController->getDBArticlesByID($url[1]);
             } else {
-                // Sinon, on affiche tous les Articles
                 echo $articleController->getAllArticles();
             }
             break;

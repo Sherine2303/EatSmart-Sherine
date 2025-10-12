@@ -15,6 +15,12 @@ class CommandeController
         $commandes = $this->model->getDBAllCommandes();
         echo json_encode($commandes);
     }
+    public function getCommandesByArticleID($articleId)
+    {
+        $commandeModel = new CommandeModel();
+        $commandes = $commandeModel->getCommandesByArticleID($articleId);
+        echo json_encode($commandes);
+    }
 }
 
 //$commandeController = new CommandeController();
