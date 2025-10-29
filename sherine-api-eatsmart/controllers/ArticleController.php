@@ -40,6 +40,15 @@ class ArticleController
             echo json_encode(["message" => "Article introuvable"]);
         }
     }
+    public function updateArticle($id,$data){
+        $success=$this->model->updateDBArticle($id,$data);
+        if ($success){
+            http_response_code(204);
+        }else{
+            http_response_code(404);
+            echo json_encode(["message" => "Client non trouvé non modifiée"]);
+        }
+    }
 }
 
 //$articleController = new ArticleController();
