@@ -46,6 +46,20 @@
             $categorie = $this-> getDBCategoriesByID($data['id_categorie']);
             return $categorie;
         }
+        public function updateDBCategorie ($id,$data){
+            $req = "UPDATE categorie
+                    SET id_categorie= :id_categorie, nom= :nom
+                    WHERE id_categorie= :id";
+            $stmt = $this->pdo->prepare($req);
+
+            $stmt->bindParam(":id_categorie",$data['id_categorie'], PDO::PARAM_INT);
+            $stmt->bindParam(":nom",$data['nom'], PDO::PARAM_STR);
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            //verifie si une ligne a été modifiée 
+            return $stmt->rowCount()>0;
+        }
     }
     //$categorieModel = new CategorieModel(); 
     //print_r($categorieModel->getDBAllCategories());
