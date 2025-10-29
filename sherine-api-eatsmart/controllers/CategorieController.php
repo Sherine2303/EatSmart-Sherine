@@ -26,6 +26,12 @@ class CategorieController
         $articles = $categorieModel->getArticlesByCategorieID($id);
         echo json_encode($articles);
     }
+    public function createCategorie($data)
+    {
+        $categorie = $this ->model->createDBCategorie($data);
+        http_response_code(201);
+        echo json_encode($categorie);
+    }
 }
 
 //$categorieController = new CategorieController();

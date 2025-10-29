@@ -73,6 +73,11 @@ if (empty($_GET["page"])) {
                         echo $categorieController->getAllCategories();
                     }
                     break;
+                case "POST":
+                    case "POST":
+                    $data = json_decode(file_get_contents("php://input"),true);
+                    $categorieController->createCategorie($data);
+                    break;
                 }
             break;
         case "commandes":
