@@ -108,6 +108,10 @@ if (empty($_GET["page"])) {
                         echo $commandeController->getAllCommandes();
                     }
                     break;
+                 case "POST":
+                    $data = json_decode(file_get_contents("php://input"), true);
+                    $commandeController->createCommande($data);
+                    break;
                 }
             break;    
         // Si la ressource n'existe pas, on renvoie un message d’erreur
