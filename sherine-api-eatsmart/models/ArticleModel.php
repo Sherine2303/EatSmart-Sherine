@@ -18,6 +18,19 @@
             $stmt = $this->pdo->query("SELECT * FROM article");
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+
+        public function getDBArticlesByID($idArticles)
+        {
+            $req = "
+                SELECT * FROM article
+                WHERE id_article = :idArticle
+            ";
+            $stmt = $this->pdo->prepare($req);
+            $stmt->bindValue(":idArticle", $idArticles, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC); // ou fetchAll si tu veux un tableau
+        }
+
         public function getDBArticlesByCategorieID($categorieId)
         {
             $req = "SELECT * FROM article WHERE id_categorie = :categorieId";

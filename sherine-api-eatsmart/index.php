@@ -16,7 +16,8 @@ if (empty($_GET["page"])) {
     
     // On découpe cette chaîne en segments, en séparant sur le caractère "/"
     // Cela donne un tableau, ex : ["chauffeurs", "3"]
-    $url = explode("/", $_GET['page']); //exploser l'url et mettre dans la 
+    $url = explode("/", $_GET['page']); //exploser l'url et mettre dans la
+    $method = $_SERVER["REQUEST_METHOD"]; 
     
     // Affiche le contenu du tableau pour vérifier comment l’URL est interprétée
     //print_r($url);
@@ -24,35 +25,47 @@ if (empty($_GET["page"])) {
     // On teste le premier segment pour déterminer la ressource demandée
     switch($url[0]) {
         case "articles":
-            if (isset($url[1]) && isset($url[2]) && $url[2] === "commandes") {
-                $commandeController->getCommandesByArticleID($url[1]);
-            } elseif (isset($url[1])) {
-                $articleController->getDBArticlesByID($url[1]);
-            } else {
-                echo $articleController->getAllArticles();
-            }
+            switch($method){
+                case "GET":
+                    if (isset($url[1]) && isset($url[2]) && $url[2] === "commandes") {
+                        $commandeController->getCommandesByArticleID($url[1]);
+                    } elseif (isset($url[1])) {
+                        $articleController->getDBArticlesByID($url[1]);
+                    } else {
+                        echo $articleController->getAllArticles();
+                    }
+                    break;
+                }
             break;
         case "categories":
-            if (isset($url[1]) && isset($url[2]) && $url[2] === "articles") {
-                // Appel correct : /categories/3/articles
-                $articleController->getArticlesByCategorieID($url[1]);
-            } elseif (isset($url[1])) {
-                // Appel classique : /categories/3
-                $categorieController->getDBCategoriesByID($url[1]);
-            } else {
-                // Appel général : /categories
-                echo $categorieController->getAllCategories();
-            }
+            switch($method){
+                case "GET":
+                    if (isset($url[1]) && isset($url[2]) && $url[2] === "articles") {
+                        // Appel correct : /categories/3/articles
+                        $categorieController->getArticlesByCategorieID($url[1]);
+                    } elseif (isset($url[1])) {
+                        // Appel classique : /categories/3
+                        $categorieController->getDBCategoriesByID($url[1]);
+                    } else {
+                        // Appel général : /categories
+                        echo $categorieController->getAllCategories();
+                    }
+                    break;
+                }
             break;
         case "commandes":
-            if (isset($url[1]) && isset($url[2]) && $url[2] === "articles") {
-                $commandeController->getArticlesByCommandeID($url[1]);
-            } elseif (isset($url[1])) {
-                $commandeController->getDBCommandesByID($url[1]);
-            } else {
-                echo $commandeController->getAllCommandes();
-            }
-            break;
+            switch($method){
+                case "GET":
+                    if (isset($url[1]) && isset($url[2]) && $url[2] === "articles") {
+                    $commandeController->getArticlesByCommandeID($url[1]);
+                    } elseif (isset($url[1])) {
+                        $commandeController->getDBCommandesByID($url[1]);
+                    } else {
+                        echo $commandeController->getAllCommandes();
+                    }
+                    break;
+                }
+            break;    
         // Si la ressource n'existe pas, on renvoie un message d’erreur
         default :
             echo "La page n'existe pas";

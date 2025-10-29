@@ -15,6 +15,17 @@ class CategorieController
         $categories = $this->model->getDBAllCategories();
         echo json_encode($categories);
     }
+    public function getDBCategoriesByID($idCategories)
+    {
+        $categorie = $this -> model -> getDBCategoriesByID($idCategories);
+        echo json_encode($categorie);
+    }
+    public function getArticlesByCategorieID($id)
+    {
+        $categorieModel = new CategorieModel();
+        $articles = $categorieModel->getArticlesByCategorieID($id);
+        echo json_encode($articles);
+    }
 }
 
 //$categorieController = new CategorieController();

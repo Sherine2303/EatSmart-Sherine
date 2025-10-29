@@ -18,6 +18,17 @@
             $stmt = $this->pdo->query("SELECT * FROM commande");
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+        public function getDBCommandesByID($idCommandes)
+        {
+            $req = "
+                SELECT * FROM commande
+                WHERE id_commande = :idCommande
+            ";
+            $stmt = $this->pdo->prepare($req);
+            $stmt->bindValue(":idCommande", $idCommandes, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC); // ou fetchAll si tu veux un tableau
+        }
         public function getCommandesByArticleID($id)
         {
             $sql = "SELECT commande.* FROM commande

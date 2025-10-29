@@ -18,6 +18,24 @@
             $stmt = $this->pdo->query("SELECT * FROM categorie");
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+        public function getDBCategoriesByID($idCategories)
+        {
+            $req = "
+                SELECT * FROM categorie
+                WHERE id_categorie = :idCategorie
+            ";
+            $stmt = $this->pdo->prepare($req);
+            $stmt->bindValue(":idCategorie", $idCategories, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC); // ou fetchAll si tu veux un tableau
+        }
+        public function getArticlesByCategorieID($id)
+        {
+            $sql = "SELECT * FROM article WHERE id_categorie = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([':id' => $id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
     }
     //$categorieModel = new CategorieModel(); 
     //print_r($categorieModel->getDBAllCategories());
