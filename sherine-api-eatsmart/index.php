@@ -38,7 +38,15 @@ if (empty($_GET["page"])) {
                 case "POST":
                     $data = json_decode(file_get_contents("php://input"),true);
                     $articleController->createArticle($data);
-                break;
+                    break;
+                case "DELETE":
+                    if (isset($url[1])) {
+                        $articleController->deleteArticle($url[1]);
+                    }else {
+                        http_response_code(400);
+                        echo json_encode(["message" => "ID de l'article manquant dans l'URL"]);
+                    }
+                    break;
             }
             break;
         case "categories":

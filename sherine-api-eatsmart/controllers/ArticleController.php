@@ -31,6 +31,15 @@ class ArticleController
         http_response_code(201);
         echo json_encode($article);
     }
+    public function deleteArticle($id){
+        $success=$this->model->deleteDBArticle($id);
+        if ($success){
+            http_response_code(204);
+        }else{
+            http_response_code(404);
+            echo json_encode(["message" => "Article introuvable"]);
+        }
+    }
 }
 
 //$articleController = new ArticleController();
