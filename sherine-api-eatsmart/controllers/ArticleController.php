@@ -25,6 +25,12 @@ class ArticleController
         $articles = $this->model->getDBArticlesByCategorieID($categorieId);
         echo json_encode($articles);
     }
+    public function createArticle($data)
+    {
+        $article = $this ->model->createDBArticle($data);
+        http_response_code(201);
+        echo json_encode($article);
+    }
 }
 
 //$articleController = new ArticleController();

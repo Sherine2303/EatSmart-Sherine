@@ -35,7 +35,11 @@ if (empty($_GET["page"])) {
                         echo $articleController->getAllArticles();
                     }
                     break;
-                }
+                case "POST":
+                    $data = json_decode(file_get_contents("php://input"),true);
+                    $articleController->createArticle($data);
+                break;
+            }
             break;
         case "categories":
             switch($method){
