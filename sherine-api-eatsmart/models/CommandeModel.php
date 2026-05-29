@@ -51,18 +51,28 @@
             $stmt->execute([':id' => $id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+        
+        // Fonction corrigée pour gérer l'AUTO_INCREMENT de MySQL
         public function createDBCommande($data){
-            $req = "INSERT INTO commande (id_commande,date_commande,prix_total,etat)
-                VALUES (:id_commande,:date_commande,:prix_total,:etat)";
+            // CORRECTION 1 : On retire 'id_commande' de la requête d'insertion
+            $req = "INSERT INTO commande (date_commande,prix_total,etat)
+                VALUES (:date_commande,:prix_total,:etat)";
             $stmt =$this->pdo->prepare($req);
-            $stmt->bindParam(":id_commande",$data['id_commande'], PDO::PARAM_INT);
+            
+            // On lie uniquement les variables nécessaires
             $stmt->bindParam(":date_commande",$data['date_commande'], PDO::PARAM_STR);
             $stmt->bindParam(":prix_total",$data['prix_total'], PDO::PARAM_STR);
             $stmt->bindParam(":etat",$data['etat'], PDO::PARAM_STR);
             $stmt->execute();
-            $commande = $this-> getDBCommandesByID($data['id_commande']);
+            
+            // CORRECTION 2 : On récupère l'ID que la BDD vient de générer automatiquement
+            $nouvelId = $this->pdo->lastInsertId();
+            
+            // CORRECTION 3 : On charge la commande fraîchement créée avec son vrai ID
+            $commande = $this->getDBCommandesByID($nouvelId);
             return $commande;
         }
+        
         public function createAssocArticleCommande($idCommande, $idArticle, $quantite)
         {
             $req = "INSERT INTO assoc_article_commande (id_article, id_commande, quantite_article)
