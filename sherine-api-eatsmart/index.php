@@ -1,95 +1,105 @@
 <?php
+/* Configuration des entetes HTTP pour autoriser les requetes cross-origin (CORS) indispensable pour le developpement de l'API decoupee */
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+
+/* Interception de la requete de pre-verification OPTIONS envoyee par le navigateur avant une requete POST ou PUT */
 if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
     http_response_code(200);
     exit();
 }
+
+/* Chargement et initialisation des differents controleurs de l'application */
 require_once "./controllers/ArticleController.php";
 $articleController = new ArticleController();
+
 require_once "./controllers/CategorieController.php";
 $categorieController = new CategorieController();
+
 require_once "./controllers/CommandeController.php";
 $commandeController = new CommandeController();
-// Vérifie si le paramètre "page" est vide ou non présent dans l'URL
+
+/* Verification de la presence du parametre de routage global transmis dans l'URL */
 if (empty($_GET["page"])) {
-    // Si le paramètre est vide, on affiche un message d'erreur
+    /* Renvoi d'un message d'erreur si aucune route n'est spécifiée */
     echo "La page n'existe pas";
 } else {
-    // Sinon, on récupère la valeur du paramètre "page"
-    // Par exemple, si l’URL est : index.php?page=chauffeurs/3
-    // Alors $_GET["page"] vaut "chauffeurs/3"
+    /* Decoupage de la chaine de l'URL en segments distincts en utilisant le separateur slash */
+    $url = explode("/", $_GET['page']); 
     
-    // On découpe cette chaîne en segments, en séparant sur le caractère "/"
-    // Cela donne un tableau, ex : ["chauffeurs", "3"]
-    $url = explode("/", $_GET['page']); //exploser l'url et mettre dans la
+    /* Recuperation de la methode HTTP utilisee pour l'appel de l'API (GET, POST, PUT, DELETE) */
     $method = $_SERVER["REQUEST_METHOD"]; 
-    
-    // Affiche le contenu du tableau pour vérifier comment l’URL est interprétée
-    //print_r($url);
 
-    // On teste le premier segment pour déterminer la ressource demandée
+    /* Premier niveau de routage base sur la ressource principale demandee dans le premier segment */
     switch($url[0]) {
+        
+        /* Gestion de la ressource liee aux articles */
         case "articles":
             switch($method){
                 case "GET":
+                    /* Exemple de route : /articles/3/commandes */
                     if (isset($url[1]) && isset($url[2]) && $url[2] === "commandes") {
                         $commandeController->getCommandesByArticleID($url[1]);
+                    /* Exemple de route : /articles/3 */
                     } elseif (isset($url[1])) {
                         $articleController->getDBArticlesByID($url[1]);
+                    /* Exemple de route : /articles */
                     } else {
                         echo $articleController->getAllArticles();
                     }
                     break;
                 case "POST":
-                    $data = json_decode(file_get_contents("php://input"),true);
+                    /* Lecture du flux brut d'entree de la requete contenant le payload JSON transmis par le client */
+                    $data = json_decode(file_get_contents("php://input"), true);
                     $articleController->createArticle($data);
                     break;
                 case "DELETE":
                     if (isset($url[1])) {
                         $articleController->deleteArticle($url[1]);
-                    }else {
+                    } else {
                         http_response_code(400);
                         echo json_encode(["message" => "ID de l'article manquant dans l'URL"]);
                     }
                     break;
                 case "PUT":
                     if (isset($url[1])) {
-                    $data = json_decode(file_get_contents("php://input"),true);
-                    $articleController->updateArticle($url[1],$data);
-                    echo json_encode($data);
-                    }else {
+                        $data = json_decode(file_get_contents("php://input"), true);
+                        $articleController->updateArticle($url[1], $data);
+                        echo json_encode($data);
+                    } else {
                         http_response_code(400);
                         echo json_encode(["message" => "ID de l'article manquant dans l'URL"]);
                     }
                     break;
             }
             break;
+            
+        /* Gestion de la ressource liee aux categories de produits */
         case "categories":
             switch($method){
                 case "GET":
+                    /* Exemple de route : /categories/3/articles */
                     if (isset($url[1]) && isset($url[2]) && $url[2] === "articles") {
-                        // Appel correct : /categories/3/articles
                         $categorieController->getArticlesByCategorieID($url[1]);
+                    /* Exemple de route : /categories/3 */
                     } elseif (isset($url[1])) {
-                        // Appel classique : /categories/3
                         $categorieController->getDBCategoriesByID($url[1]);
+                    /* Exemple de route : /categories */
                     } else {
-                        // Appel général : /categories
                         echo $categorieController->getAllCategories();
                     }
                     break;
                 case "POST":
-                    $data = json_decode(file_get_contents("php://input"),true);
+                    $data = json_decode(file_get_contents("php://input"), true);
                     $categorieController->createCategorie($data);
                     break;
                 case "PUT":
                     if (isset($url[1])) {
-                    $data = json_decode(file_get_contents("php://input"),true);
-                    $categorieController->updateCategorie($url[1],$data);
-                    echo json_encode($data);
-                    }else {
+                        $data = json_decode(file_get_contents("php://input"), true);
+                        $categorieController->updateCategorie($url[1], $data);
+                        echo json_encode($data);
+                    } else {
                         http_response_code(400);
                         echo json_encode(["message" => "ID de la categorie manquant dans l'URL"]);
                     }
@@ -97,20 +107,25 @@ if (empty($_GET["page"])) {
                 case "DELETE":
                     if (isset($url[1])) {
                         $categorieController->deleteCategorie($url[1]);
-                    }else {
+                    } else {
                         http_response_code(400);
                         echo json_encode(["message" => "ID de la categorie manquant dans l'URL"]);
                     }
                     break;
-                }
+            }
             break;
+            
+        /* Gestion de la ressource liee au traitement des commandes */
         case "commandes":
             switch($method){
                 case "GET":
+                    /* Exemple de route : /commandes/3/articles */
                     if (isset($url[1]) && isset($url[2]) && $url[2] === "articles") {
-                    $commandeController->getArticlesByCommandeID($url[1]);
+                        $commandeController->getArticlesByCommandeID($url[1]);
+                    /* Exemple de route : /commandes/3 */
                     } elseif (isset($url[1])) {
                         $commandeController->getDBCommandesByID($url[1]);
+                    /* Exemple de route : /commandes */
                     } else {
                         echo $commandeController->getAllCommandes();
                     }
@@ -119,9 +134,10 @@ if (empty($_GET["page"])) {
                     $data = json_decode(file_get_contents("php://input"), true);
                     $commandeController->createCommande($data);
                     break;
-                }
+            }
             break;    
-        // Si la ressource n'existe pas, on renvoie un message d’erreur
+            
+        /* Traitement par defaut applique si le premier segment d'URL ne correspond a aucun point d'entree defini */
         default :
             echo "La page n'existe pas";
     }

@@ -1,34 +1,47 @@
 <?php
-    class CommandeModel //ici
+    /* Modèle de gestion des commandes assurant la liaison avec la base de données */
+    class CommandeModel 
     {
+        /* Propriété stockant l'instance de connexion PDO */
         private $pdo;
 
+        /* Constructeur initialisant la connexion à la base de données MySQL */
         public function __construct()
         {
             try {
+                /* Tentative de connexion avec encodage UTF-8 pour éviter les erreurs de caractères */
                 $this->pdo = new PDO("mysql:host=localhost;dbname=eatsmart_bdd_bruno;charset=utf8", "root", "");
+                /* Configuration de PDO pour lever des exceptions en cas d'erreur SQL */
                 $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch (PDOException $e) {
+                /* Arrêt du script et affichage du message d'erreur en cas d'échec de connexion */
                 die("Erreur de connexion à la base de données : " . $e->getMessage());
             }
         }
 
-        public function getDBAllCommandes() //ici
+        /* Récupère l'intégralité des enregistrements de la table commande */
+        public function getDBAllCommandes() 
         {
             $stmt = $this->pdo->query("SELECT * FROM commande");
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+
+        /* Récupère une commande spécifique à partir de son identifiant unique */
         public function getDBCommandesByID($idCommandes)
         {
             $req = "
                 SELECT * FROM commande
                 WHERE id_commande = :idCommande
             ";
+            /* Utilisation d'une requête préparée pour prémunir l'application des injections SQL */
             $stmt = $this->pdo->prepare($req);
+            /* Sécurisation et typage du paramètre ID sous forme d'entier */
             $stmt->bindValue(":idCommande", $idCommandes, PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC); // ou fetchAll si tu veux un tableau
+            return $stmt->fetch(PDO::FETCH_ASSOC); 
         }
+
+        /* Sélectionne les commandes associées à un produit spécifique via une jointure */
         public function getCommandesByArticleID($id)
         {
             $sql = "SELECT commande.* FROM commande
@@ -39,6 +52,8 @@
             $stmt->execute([':id' => $id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+
+        /* Récupère tous les articles ainsi que leurs quantités pour une commande donnée */
         public function getArticlesByCommandeID($id)
         {
             $sql = "SELECT article.id_article, article.nom, article.prix, article.description, article.id_categorie,
@@ -52,27 +67,28 @@
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         
-        // Fonction corrigée pour gérer l'AUTO_INCREMENT de MySQL
+        /* Insère une nouvelle commande en base de données et retourne l'enregistrement créé */
         public function createDBCommande($data){
-            // CORRECTION 1 : On retire 'id_commande' de la requête d'insertion
+            /* L'identifiant 'id_commande' est omis de la requête car géré par l'AUTO_INCREMENT de MySQL */
             $req = "INSERT INTO commande (date_commande,prix_total,etat)
                 VALUES (:date_commande,:prix_total,:etat)";
             $stmt =$this->pdo->prepare($req);
             
-            // On lie uniquement les variables nécessaires
+            /* Liaison des données reçues aux paramètres nommés de la requête préparée */
             $stmt->bindParam(":date_commande",$data['date_commande'], PDO::PARAM_STR);
             $stmt->bindParam(":prix_total",$data['prix_total'], PDO::PARAM_STR);
             $stmt->bindParam(":etat",$data['etat'], PDO::PARAM_STR);
             $stmt->execute();
             
-            // CORRECTION 2 : On récupère l'ID que la BDD vient de générer automatiquement
+            /* Récupération du dernier identifiant unique généré automatiquement par la base de données */
             $nouvelId = $this->pdo->lastInsertId();
             
-            // CORRECTION 3 : On charge la commande fraîchement créée avec son vrai ID
+            /* Chargement et retour de la commande nouvellement insérée à des fins de confirmation */
             $commande = $this->getDBCommandesByID($nouvelId);
             return $commande;
         }
         
+        /* Crée l'association entre un produit et une commande dans la table pivot */
         public function createAssocArticleCommande($idCommande, $idArticle, $quantite)
         {
             $req = "INSERT INTO assoc_article_commande (id_article, id_commande, quantite_article)
@@ -84,6 +100,4 @@
             $stmt->execute();
         }
     }
-    //$commandeModel = new CommandeModel(); 
-    //print_r($commandeModel->getDBAllCommandes());
 ?>
